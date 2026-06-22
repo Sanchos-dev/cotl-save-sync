@@ -1,56 +1,56 @@
 # Cult of the Lamb Save Sync & Backup Utility
 
-Утилита с графическим интерфейсом (UI) для двунаправленного переноса и автоматического исправления сохранений игры **Cult of the Lamb** между консолью **Nintendo Switch** и **ПК (Steam)**.
+A utility with a graphical user interface (GUI) for bidirectional transfer and automatic patching of Cult of the Lamb game saves between Nintendo Switch and PC (Steam).
 
 ---
 
-## 📋 Требования для переноса
+## Transfer Requirements
 
-Перед использованием утилиты убедитесь, что выполнены следующие требования:
+Ensure the following requirements are met before using the utility:
 
-1. **На ПК**:
-   - Установлен **Python 3** (для запуска исходного кода).
-   - Установлен **Node.js** (версии 16 или выше) для обработки MessagePack/LZ4 данных.
-   - Отключена функция **Steam Cloud** в свойствах игры *Cult of the Lamb* в Steam (чтобы Steam не заменял перенесённые файлы на старые облачные копии).
+1. On PC:
+   - Python 3 installed (to run source code, if not using the compiled executable).
+   - Node.js (version 16 or higher) installed to process MessagePack and LZ4 data.
+   - Steam Cloud disabled in the properties of Cult of the Lamb in Steam (to prevent Steam from overwriting synchronized files with older cloud copies).
 
-2. **На Nintendo Switch (прошитая консоль)**:
-   - Установлен менеджер сохранений **JKSV**.
-   - Запущен **FTP-сервер** (например, через homebrew-приложение `ftpd` или встроенный FTP в Atmosphere/JKSV).
-   - Консоль находится в одной локальной Wi-Fi сети с компьютером.
-
----
-
-## 📥 Инструкция: Перенос со Switch на ПК (Switch ➔ PC Sync)
-
-Этот режим скачивает сохранения с консоли, автоматически исправляет несовместимость версий и лечит баг с зависанием искусственного интеллекта последователей (TwitchSettings null-pointer freeze).
-
-1. Запустите игру на Switch, откройте **JKSV**, выберите *Cult of the Lamb* и сделайте резервную копию (**Create Backup**).
-2. Запустите FTP-сервер на Switch и посмотрите IP-адрес и порт.
-3. Запустите `SaveSync.exe` (или `SaveSyncGUI.py`) на ПК.
-4. Введите IP-адрес и порт Switch в соответствующие поля в левой части окна.
-5. Нажмите кнопку **`Switch ➔ PC Sync`**.
-6. Утилита сама:
-   - Скачает последний бэкап по FTP.
-   - Декомпрессирует блоки LZ4 и MessagePack-структуры.
-   - Исправит Twitch-настройки на ПК-совместимые и увеличит массив сохранения до ПК-размера (1396 элементов).
-   - Зашифрует файлы под стандарт ПК (AES-128-CBC) и установит в вашу папку сохранений Steam.
-7. Запустите игру на ПК и выберите нужный слот сохранения.
+2. On Nintendo Switch (modded console):
+   - JKSV save manager installed.
+   - FTP server running (via homebrew application like ftpd, or the built-in FTP server in Atmosphere/JKSV).
+   - Console connected to the same local Wi-Fi network as the computer.
 
 ---
 
-## 📤 Инструкция: Перенос с ПК на Switch (PC ➔ Switch Sync)
+## Instructions: Syncing from Switch to PC (Switch -> PC Sync)
 
-Этот режим берет ваши текущие сохранения ПК, адаптирует их под Switch и загружает готовую резервную копию JKSV обратно на консоль.
+This mode downloads saves from the console, automatically fixes version incompatibilities, and resolves the follower AI freeze bug (TwitchSettings null-pointer freeze).
 
-1. Убедитесь, что на Switch в JKSV есть хотя бы один ранее созданный бэкап (он используется утилитой как шаблон для сохранения консольных метафайлов, скриншотов и `.nx_save_meta.bin`).
-2. Запустите FTP-сервер на Switch.
-3. В утилите на ПК нажмите кнопку **`PC ➔ Switch Sync`**.
-4. Утилита автоматически:
-   - Прочитает ваши активные сохранения ПК.
-   - Дешифрует и распакует их.
-   - Адаптирует структуры под Switch (сбросит TwitchSettings в `null` и уменьшит размер массива до 1395 элементов).
-   - Скомпрессирует слоты и метаданные обратно в LZ4 блоки с Switch-заголовком `MP`.
-   - Запишет их в копию оригинального JKSV-архива с именем вида `sync_PC - [дата].zip`.
-   - Загрузит этот ZIP-архив обратно на Switch в папку бэкапов JKSV.
-5. На Switch откройте **JKSV**, выберите *Cult of the Lamb*, найдите в списке бэкап с именем **`sync_PC - [дата]`** и нажмите **Restore** (Восстановить).
-6. Запустите игру на Switch — ваш прогресс с ПК успешно импортирован!
+1. Launch the game on Switch, open JKSV, select Cult of the Lamb, and create a backup (Create Backup).
+2. Start the FTP server on Switch and note the IP address and port.
+3. Run SaveSync.exe (or SaveSyncGUI.py) on PC.
+4. Enter the Switch IP address and port in the corresponding fields on the left side of the window.
+5. Click the "Switch -> PC Sync" button.
+6. The utility will automatically:
+   - Download the latest backup via FTP.
+   - Decompress LZ4 blocks and decode MessagePack structures.
+   - Patch Twitch settings to be PC-compatible and expand the save array to the PC size of 1396 elements.
+   - Encrypt the files to PC standard (AES-128-CBC) and deploy them to your Steam saves folder.
+7. Launch the game on PC and load the corresponding save slot.
+
+---
+
+## Instructions: Syncing from PC to Switch (PC -> Switch Sync)
+
+This mode takes your current PC saves, adapts them for Switch, and uploads a JKSV-compatible backup archive back to the console.
+
+1. Ensure that you have at least one previously created backup in JKSV on your Switch (used as a template to preserve Switch-specific metadata files, screenshots, and .nx_save_meta.bin).
+2. Start the FTP server on Switch.
+3. In the utility on PC, click the "PC -> Switch Sync" button.
+4. The utility will automatically:
+   - Read your active PC saves.
+   - Decrypt and decompress them.
+   - Adapt structures for Switch (reset TwitchSettings to null and decrease the array size to 1395 elements).
+   - Compress the slots and metadata back into LZ4 blocks with the Switch "MP" header.
+   - Write them into a copy of the original JKSV archive named "sync_PC - [date].zip".
+   - Upload this ZIP archive back to the Switch under the JKSV backups folder.
+5. On Switch, open JKSV, select Cult of the Lamb, find the backup named "sync_PC - [date]" in the list, and press Restore.
+6. Launch the game on Switch to load the imported progress.
