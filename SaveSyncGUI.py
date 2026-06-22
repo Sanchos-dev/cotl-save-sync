@@ -187,8 +187,14 @@ class SaveSyncApp:
         console_frame = tk.Frame(main_frame, bg=self.card_color, bd=1, relief=tk.SOLID, highlightbackground="#313244")
         console_frame.place(relx=0.0, rely=0.65, relwidth=1.0, relheight=0.35)
         
-        lbl3 = ttk.Label(console_frame, text="Console Log Output", style="Header.TLabel")
-        lbl3.pack(anchor=tk.W, padx=15, pady=5)
+        console_header_frame = tk.Frame(console_frame, bg=self.card_color)
+        console_header_frame.pack(fill=tk.X, padx=15, pady=5)
+        
+        lbl3 = ttk.Label(console_header_frame, text="Console Log Output", style="Header.TLabel")
+        lbl3.pack(side=tk.LEFT)
+        
+        lbl_author = ttk.Label(console_header_frame, text="Made by Sanchos from sanchos.su", font=("Segoe UI", 9, "italic"), foreground="#a6adc8")
+        lbl_author.pack(side=tk.RIGHT)
         
         self.log_area = scrolledtext.ScrolledText(console_frame, bg="#11111b", fg=self.text_color, bd=0,
                                                   insertbackground=self.text_color, font=("Consolas", 10))
