@@ -1,0 +1,24 @@
+# Node.js
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.spec
+
+# Game Saves & Temp
+temp_extracted/
+temp_switch_export/
+backups/
+FINAL_WORKING_BACKUP/
+*.bin
+*.zip
+config.json
+
+# OS files
+.DS_Store
+Thumbs.db

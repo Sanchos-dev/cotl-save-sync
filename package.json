@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@addmaple/lz4": "^0.2.0",
+    "adm-zip": "^0.5.17",
+    "lamb-mp-decoder": "^1.0.0"
+  }
+}
