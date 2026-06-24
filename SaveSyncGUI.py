@@ -211,6 +211,15 @@ class SaveSyncApp:
         self.sync_btn.config(state=tk.DISABLED, text="Syncing...")
         self.log("Starting Switch Synchronization workflow...")
         
+        # Clean up any existing patched files to prevent stale deployment
+        if os.path.exists(CULT_SYNC_DIR):
+            for f in os.listdir(CULT_SYNC_DIR):
+                if f.endswith("_patched.bin"):
+                    try:
+                        os.remove(os.path.join(CULT_SYNC_DIR, f))
+                    except Exception:
+                        pass
+        
         try:
             # 1. Connect to FTP
             ip = self.config["switch_ip"]
@@ -324,14 +333,24 @@ class SaveSyncApp:
         return b'E' + key + iv + ciphertext
 
     def encrypt_and_deploy_saves(self):
-        # Setup files mapping
-        files_to_process = {
-            os.path.join(CULT_SYNC_DIR, "slot_0MP_patched.bin"): "slot_0.mp",
-            os.path.join(CULT_SYNC_DIR, "slot_10MP_patched.bin"): "slot_10.mp",
-            os.path.join(CULT_SYNC_DIR, "meta_0MP_patched.bin"): "meta_0.mp",
-            os.path.join(CULT_SYNC_DIR, "meta_10MP_patched.bin"): "meta_10.mp",
-            os.path.join(CULT_SYNC_DIR, "temp_extracted", "persistence"): "persistence"
-        }
+        # Dynamically scan CULT_SYNC_DIR for patched save files
+        files_to_process = {}
+        if os.path.exists(CULT_SYNC_DIR):
+            for file_name in os.listdir(CULT_SYNC_DIR):
+                if file_name.endswith("_patched.bin"):
+                    src_path = os.path.join(CULT_SYNC_DIR, file_name)
+                    base_name = file_name.replace("_patched.bin", "")
+                    if base_name.startswith("slot_"):
+                        num = base_name.replace("slot_", "").replace("MP", "")
+                        files_to_process[src_path] = f"slot_{num}.mp"
+                    elif base_name.startswith("meta_"):
+                        num = base_name.replace("meta_", "").replace("MP", "")
+                        files_to_process[src_path] = f"meta_{num}.mp"
+        
+        # Check for persistence in temp_extracted
+        persistence_src = os.path.join(CULT_SYNC_DIR, "temp_extracted", "persistence")
+        if os.path.exists(persistence_src):
+            files_to_process[persistence_src] = "persistence"
         
         # Backup settings.json first
         settings_path = os.path.join(PC_SAVE_DIR, "settings.json")

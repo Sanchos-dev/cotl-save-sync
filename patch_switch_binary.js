@@ -100,12 +100,15 @@ async function encodeCompressedMP(flatArray) {
 async function runSwitchToPc() {
     console.log("=== RUNNING SWITCH -> PC CONVERSION ===");
     
-    const slots = [
-        { switchFile: "slot_0MP", isSlot: true },
-        { switchFile: "slot_10MP", isSlot: true },
-        { switchFile: "meta_0MP", isSlot: false },
-        { switchFile: "meta_10MP", isSlot: false }
-    ];
+    const files = fs.readdirSync(TEMP_DIR);
+    const slots = [];
+    for (const file of files) {
+        if (file.match(/^slot_\d+MP$/)) {
+            slots.push({ switchFile: file, isSlot: true });
+        } else if (file.match(/^meta_\d+MP$/)) {
+            slots.push({ switchFile: file, isSlot: false });
+        }
+    }
     
     for (const fileObj of slots) {
         const switchPath = path.join(TEMP_DIR, fileObj.switchFile);
@@ -181,12 +184,17 @@ async function runPcToSwitch() {
     // Open the target zip
     const zip = new AdmZip(targetZipPath);
     
-    const slots = [
-        { pcFile: "slot_0.mp", switchName: "slot_0MP", isSlot: true },
-        { pcFile: "slot_10.mp", switchName: "slot_10MP", isSlot: true },
-        { pcFile: "meta_0.mp", switchName: "meta_0MP", isSlot: false },
-        { pcFile: "meta_10.mp", switchName: "meta_10MP", isSlot: false }
-    ];
+    const pcFiles = fs.existsSync(PC_SAVES_DIR) ? fs.readdirSync(PC_SAVES_DIR) : [];
+    const slots = [];
+    for (const file of pcFiles) {
+        const slotMatch = file.match(/^slot_(\d+)\.mp$/);
+        const metaMatch = file.match(/^meta_(\d+)\.mp$/);
+        if (slotMatch) {
+            slots.push({ pcFile: file, switchName: `slot_${slotMatch[1]}MP`, isSlot: true });
+        } else if (metaMatch) {
+            slots.push({ pcFile: file, switchName: `meta_${metaMatch[1]}MP`, isSlot: false });
+        }
+    }
     
     let filesProcessedCount = 0;
     
