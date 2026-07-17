@@ -10,7 +10,22 @@ const CULT_SYNC_DIR = __dirname;
 const TEMP_DIR = path.join(CULT_SYNC_DIR, "temp_extracted");
 const PC_VERSION = "1.5.25.1049";
 const SWITCH_VERSION = "1.5.24";
-const PC_SAVES_DIR = path.join(process.env.USERPROFILE, 'AppData', 'LocalLow', 'Massive Monster', 'Cult Of The Lamb', 'saves');
+
+let PC_SAVES_DIR;
+if (process.platform === 'win32') {
+    PC_SAVES_DIR = path.join(process.env.USERPROFILE, 'AppData', 'LocalLow', 'Massive Monster', 'Cult Of The Lamb', 'saves');
+} else {
+    const homeDir = process.env.HOME || `/home/${process.env.USER}`;
+    const protonPath = path.join(homeDir, '.local', 'share', 'Steam', 'steamapps', 'compatdata', '1313140', 'pfx', 'drive_c', 'users', 'steamuser', 'AppData', 'LocalLow', 'Massive Monster', 'Cult Of The Lamb', 'saves');
+    const nativePath = path.join(homeDir, '.config', 'unity3d', 'Massive Monster', 'Cult Of The Lamb', 'saves');
+    if (fs.existsSync(protonPath)) {
+        PC_SAVES_DIR = protonPath;
+    } else if (fs.existsSync(nativePath)) {
+        PC_SAVES_DIR = nativePath;
+    } else {
+        PC_SAVES_DIR = protonPath;
+    }
+}
 
 // Helper to decrypt AES-128-CBC save file
 function decryptSave(filePath) {

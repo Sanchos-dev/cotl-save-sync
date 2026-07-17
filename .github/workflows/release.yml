@@ -1,0 +1,117 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pycryptodome pyinstaller
+          npm install --omit=dev
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --windowed --name=SaveSync SaveSyncGUI.py
+
+      - name: Package Release
+        run: |
+          mkdir release_dir
+          copy dist\SaveSync.exe release_dir\
+          copy patch_switch_binary.js release_dir\
+          copy package.json release_dir\
+          xcopy /E /I node_modules release_dir\node_modules
+          powershell Compress-Archive -Path release_dir\* -DestinationPath SaveSync_Windows_Release.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: SaveSync_Windows_Release.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pycryptodome pyinstaller
+          npm install --omit=dev
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --windowed --name=SaveSync SaveSyncGUI.py
+
+      - name: Package Release
+        run: |
+          mkdir release_dir
+          cp dist/SaveSync release_dir/
+          cp patch_switch_binary.js release_dir/
+          cp package.json release_dir/
+          cp -r node_modules release_dir/
+          zip -r SaveSync_Linux_Release.zip release_dir
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-release
+          path: SaveSync_Linux_Release.zip
+
+  create-release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-release
+
+      - name: Download Linux Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            SaveSync_Windows_Release.zip
+            SaveSync_Linux_Release.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

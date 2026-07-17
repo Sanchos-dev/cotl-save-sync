@@ -10,12 +10,16 @@ import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
 # Auto-install dependencies
+import platform
 try:
     from Crypto.Cipher import AES
     from Crypto.Random import get_random_bytes
 except ImportError:
     print("Installing pycryptodome...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pycryptodome"])
+    pip_cmd = [sys.executable, "-m", "pip", "install", "pycryptodome"]
+    if platform.system() != "Windows":
+        pip_cmd.append("--break-system-packages")
+    subprocess.check_call(pip_cmd)
     from Crypto.Cipher import AES
     from Crypto.Random import get_random_bytes
 
@@ -26,7 +30,18 @@ else:
     CULT_SYNC_DIR = os.path.dirname(os.path.abspath(__file__))
 
 CONFIG_PATH = os.path.join(CULT_SYNC_DIR, "config.json")
-PC_SAVE_DIR = os.path.expandvars(r"%USERPROFILE%\AppData\LocalLow\Massive Monster\Cult Of The Lamb\saves")
+if platform.system() == "Windows":
+    PC_SAVE_DIR = os.path.expandvars(r"%USERPROFILE%\AppData\LocalLow\Massive Monster\Cult Of The Lamb\saves")
+else:
+    _home = os.path.expanduser("~")
+    _proton_path = os.path.join(_home, ".local/share/Steam/steamapps/compatdata/1313140/pfx/drive_c/users/steamuser/AppData/LocalLow/Massive Monster/Cult Of The Lamb/saves")
+    _native_path = os.path.join(_home, ".config/unity3d/Massive Monster/Cult Of The Lamb/saves")
+    if os.path.exists(_proton_path):
+        PC_SAVE_DIR = _proton_path
+    elif os.path.exists(_native_path):
+        PC_SAVE_DIR = _native_path
+    else:
+        PC_SAVE_DIR = _proton_path
 BACKUPS_DIR = os.path.join(CULT_SYNC_DIR, "backups")
 
 class SaveSyncApp:

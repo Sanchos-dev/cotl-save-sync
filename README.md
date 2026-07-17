@@ -11,6 +11,7 @@ Ensure the following requirements are met before using the utility:
 1. On PC:
    - Python 3 installed (to run source code, if not using the compiled executable).
    - Node.js (version 16 or higher) installed to process MessagePack and LZ4 data.
+   - For Linux users: Tkinter must be installed. On Arch Linux, install it via `sudo pacman -S tk`.
    - Steam Cloud disabled in the properties of Cult of the Lamb in Steam (to prevent Steam from overwriting synchronized files with older cloud copies).
 
 2. On Nintendo Switch (modded console):
