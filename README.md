@@ -55,6 +55,7 @@ This mode takes your current PC saves, adapts them for Switch, and uploads a JKS
    - Upload this ZIP archive back to the Switch under the JKSV backups folder.
 5. On Switch, open JKSV, select Cult of the Lamb, find the backup named "sync_PC - [date]" in the list, and press Restore.
 6. Launch the game on Switch to load the imported progress.
+7. bleb
 ---
 
 Made by Sanchos from https://sanchos.su
