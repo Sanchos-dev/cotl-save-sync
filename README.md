@@ -36,7 +36,7 @@ This mode downloads saves from the console, automatically fixes version incompat
    - Patch Twitch settings to be PC-compatible and expand the save array to the PC size of 1396 elements.
    - Encrypt the files to PC standard (AES-128-CBC) and deploy them to your Steam saves folder.
 7. Launch the game on PC and load the corresponding save slot.
-
+8. enjoy!
 ---
 
 ## Instructions: Syncing from PC to Switch (PC -> Switch Sync)
@@ -55,7 +55,7 @@ This mode takes your current PC saves, adapts them for Switch, and uploads a JKS
    - Upload this ZIP archive back to the Switch under the JKSV backups folder.
 5. On Switch, open JKSV, select Cult of the Lamb, find the backup named "sync_PC - [date]" in the list, and press Restore.
 6. Launch the game on Switch to load the imported progress.
-7. bleb
+7. enjoy!
 ---
 
 Made by Sanchos from https://sanchos.su
